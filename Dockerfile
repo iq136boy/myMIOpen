@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 
 ARG PREFIX=/usr/local
-ARG GPU_ARCH=";"
+# ARG GPU_ARCH=";"
 ARG MIOTENSILE_VER="default"
 ARG USE_TARGETID="OFF"
 ARG USE_MLIR="OFF"
@@ -127,3 +127,5 @@ RUN if [ "$USE_MLIR" = "ON" ]; \
     make -j$(nproc) libMLIRMIOpen && \
     $PREFIX/bin/cmake --install . --component libMLIRMIOpen --prefix /opt/rocm && \
     cd ~ && rm -rf llvm-project-mlir-$MLIR_COMMIT; fi
+    
+RUN if [ "GPU_ARCH" = "gfx90a"] ; then ENV MIOPEN_TEST_GFX90a=ON; fi 

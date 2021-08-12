@@ -170,10 +170,10 @@ def buildHipClangJob(Map conf=[:]){
 }
 
 def reboot(){
-    sh  '''
-	echo "disabled reboot on gfx90a"
-	'''
-    /// build job: 'reboot-slaves', propagate: false , parameters: [string(name: 'server', value: "${env.NODE_NAME}"),]
+    //sh  '''
+	//echo "disabled reboot on gfx90a"
+	//'''
+    build job: 'reboot-slaves', propagate: false , parameters: [string(name: 'server', value: "${env.NODE_NAME}"),]
 }
 
 def buildHipClangJobAndReboot(Map conf=[:]){
@@ -348,12 +348,12 @@ pipeline {
                         buildHipClangJobAndReboot(compiler: 'g++', config_targets: Smoke_targets, gpu_arch: "gfx908")
                     }
                 }
-                stage('Fp32 OpenCL gfx90a') {
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot(compiler: 'g++', config_targets: Smoke_targets, gpu_arch: "gfx90a")
-                    }
-                }
+                // stage('Fp32 OpenCL gfx90a') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot(compiler: 'g++', config_targets: Smoke_targets, gpu_arch: "gfx90a")
+                //     }
+                // }
                 stage('Fp32 Hip /opt/rocm') {
                     agent{ label rocmnode("vega") }
                     steps{
@@ -382,16 +382,16 @@ pipeline {
                         buildHipClangJobAndReboot(prefixpath: prefixpath, build_type: 'debug', config_targets: Smoke_targets, gpu_arch: gpu_arch)
                     }
                 }
-                stage('Fp32 Hip Debug gfx90a /opt/rocm') {
-                    agent{ label rocmnode("gfx90a") }
-                    environment{
-                        gpu_arch = "gfx90a"
-                        prefixpath = "/opt/rocm"
-                    }
-                    steps{
-                        buildHipClangJobAndReboot(prefixpath: prefixpath, build_type: 'debug', config_targets: Smoke_targets, gpu_arch: gpu_arch)
-                    }
-                }
+                // stage('Fp32 Hip Debug gfx90a /opt/rocm') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     environment{
+                //         gpu_arch = "gfx90a"
+                //         prefixpath = "/opt/rocm"
+                //     }
+                //     steps{
+                //         buildHipClangJobAndReboot(prefixpath: prefixpath, build_type: 'debug', config_targets: Smoke_targets, gpu_arch: gpu_arch)
+                //     }
+                // }
                 stage('Fp32 HipNoGPU Debug') {
                     agent{  label rocmnode("nogpu") }
                     environment{
@@ -487,18 +487,18 @@ pipeline {
                         buildHipClangJobAndReboot(setup_flags: MLIR_flags, build_env: extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx908", mlir_build: "ON")
                     }
                 }
-                stage('Fp16 Hip MLIR gfx90a') {
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot(setup_flags: MLIR_flags + Fp16_flags, build_env: extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a", mlir_build: "ON")
-                    }
-                }
-                stage('Fp32 Hip MLIR gfx90a') {
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot(setup_flags: MLIR_flags, build_env: extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a", mlir_build: "ON")
-                    }
-                }
+                // stage('Fp16 Hip MLIR gfx90a') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot(setup_flags: MLIR_flags + Fp16_flags, build_env: extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a", mlir_build: "ON")
+                //     }
+                // }
+                // stage('Fp32 Hip MLIR gfx90a') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot(setup_flags: MLIR_flags, build_env: extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a", mlir_build: "ON")
+                //     }
+                // }
             }
         }
         stage("Smoke Fp16/Bf16/Int8"){
@@ -543,18 +543,18 @@ pipeline {
                         buildHipClangJobAndReboot(setup_flags: Bf16_flags, prefixpath: '/opt/rocm', config_targets: Smoke_targets, gpu_arch: "gfx908")
                     }
                 }
-                stage('Fp16 Hip gfx90a /opt/rocm') {
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot( setup_flags: Fp16_flags, prefixpath: '/opt/rocm', config_targets: Smoke_targets, gpu_arch: "gfx90a")
-                    }
-                }
-                stage('Bf16 Hip gfx90a /opt/rocm') {
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot(setup_flags: Bf16_flags, prefixpath: '/opt/rocm', config_targets: Smoke_targets, gpu_arch: "gfx90a")
-                    }
-                }
+                // stage('Fp16 Hip gfx90a /opt/rocm') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot( setup_flags: Fp16_flags, prefixpath: '/opt/rocm', config_targets: Smoke_targets, gpu_arch: "gfx90a")
+                //     }
+                // }
+                // stage('Bf16 Hip gfx90a /opt/rocm') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot(setup_flags: Bf16_flags, prefixpath: '/opt/rocm', config_targets: Smoke_targets, gpu_arch: "gfx90a")
+                //     }
+                // }
             }
         }
         stage("Smoke MIOpenTensile Latest"){
@@ -591,20 +591,20 @@ pipeline {
                         buildHipClangJobAndReboot( setup_flags: Tensile_setup + extra_log_env + Bf16_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx908:xnack-", miotensile_version: Tensile_version, target_id: "ON")
                     }
                 }
-                stage('Fp32 Hip Tensile-Latest All gfx90a') {
-                    when { expression { params.SMOKE_MIOPENTENSILE_LATEST && !params.DISABLE_ALL_STAGES } }
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot( setup_flags: Tensile_setup + extra_log_env, build_env: Tensile_build_env + extra_log_env, gpu_arch: "gfx90a:xnack-", test_flags: ' --verbose ', miotensile_version: Tensile_version, target_id: "ON")
-                    }
-                }
-                stage('Bf16 Hip Tensile-Latest All gfx90a') {
-                    when { expression { params.SMOKE_MIOPENTENSILE_LATEST && !params.DISABLE_ALL_STAGES } }
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot( setup_flags: Tensile_setup + extra_log_env + Bf16_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
-                    }
-                }
+                // stage('Fp32 Hip Tensile-Latest All gfx90a') {
+                //     when { expression { params.SMOKE_MIOPENTENSILE_LATEST && !params.DISABLE_ALL_STAGES } }
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot( setup_flags: Tensile_setup + extra_log_env, build_env: Tensile_build_env + extra_log_env, gpu_arch: "gfx90a:xnack-", test_flags: ' --verbose ', miotensile_version: Tensile_version, target_id: "ON")
+                //     }
+                // }
+                // stage('Bf16 Hip Tensile-Latest All gfx90a') {
+                //     when { expression { params.SMOKE_MIOPENTENSILE_LATEST && !params.DISABLE_ALL_STAGES } }
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot( setup_flags: Tensile_setup + extra_log_env + Bf16_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
+                //     }
+                // }
             }
         }
         stage("Full Tests I"){
@@ -628,12 +628,12 @@ pipeline {
                         buildHipClangJobAndReboot(setup_flags: Bf16_flags + Full_test, build_install: "true", gpu_arch: "gfx908")
                     }
                 }
-                stage('Bf16 Hip Install All gfx90a') {
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot(setup_flags: Bf16_flags + Full_test, build_install: "true", gpu_arch: "gfx90a")
-                    }
-                }
+                // stage('Bf16 Hip Install All gfx90a') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot(setup_flags: Bf16_flags + Full_test, build_install: "true", gpu_arch: "gfx90a")
+                //     }
+                // }
             }
         }
 
@@ -649,12 +649,12 @@ pipeline {
                         buildHipClangJobAndReboot(setup_flags: Full_test, build_env: WORKAROUND_iGemm_936, gpu_arch: "gfx908")
                     }
                 }
-                stage('Fp32 Hip All gfx90a') {
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot(setup_flags: Full_test, build_env: WORKAROUND_iGemm_936, gpu_arch: "gfx90a")
-                    }
-                }
+                // stage('Fp32 Hip All gfx90a') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot(setup_flags: Full_test, build_env: WORKAROUND_iGemm_936, gpu_arch: "gfx90a")
+                //     }
+                // }
                 stage('Fp16 Hip Install All Vega20') {
                     agent{ label rocmnode("vega20") }
                     steps{
@@ -679,12 +679,12 @@ pipeline {
                         buildHipClangJobAndReboot(setup_flags: Full_test + Fp16_flags, build_env: WORKAROUND_iGemm_936, build_install: "true", gpu_arch: "gfx908")
                     }
                 }
-                stage('Fp16 Hip All Install gfx90a') {
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot(setup_flags: Full_test + Fp16_flags, build_env: WORKAROUND_iGemm_936, build_install: "true", gpu_arch: "gfx90a")
-                    }
-                }
+                // stage('Fp16 Hip All Install gfx90a') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot(setup_flags: Full_test + Fp16_flags, build_env: WORKAROUND_iGemm_936, build_install: "true", gpu_arch: "gfx90a")
+                //     }
+                // }
             }
         }
 
@@ -742,30 +742,30 @@ pipeline {
                         buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env + Int8_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx908:xnack-", miotensile_version: Tensile_version, target_id: "ON")
                     }
                 }
-                stage('Fp32 Hip Tensile All gfx90a') {
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
-                    }
-                }
-                stage('Fp16 Hip Tensile All gfx90a') {
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env + Fp16_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
-                    }
-                }
-                stage('Bf16 Hip Tensile All gfx90a') {
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env + Bf16_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
-                    }
-                }
-                stage('Int8 Hip Tensile All gfx90a') {
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env + Int8_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
-                    }
-                }
+                // stage('Fp32 Hip Tensile All gfx90a') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
+                //     }
+                // }
+                // stage('Fp16 Hip Tensile All gfx90a') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env + Fp16_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
+                //     }
+                // }
+                // stage('Bf16 Hip Tensile All gfx90a') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env + Bf16_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
+                //     }
+                // }
+                // stage('Int8 Hip Tensile All gfx90a') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env + Int8_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
+                //     }
+                // }
             }
         }
         stage("MIOpenTensile Latest"){
@@ -822,30 +822,30 @@ pipeline {
                         buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env + Int8_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx908:xnack-", miotensile_version: Tensile_version, target_id: "ON")
                     }
                 }
-                stage('Fp32 Hip Tensile-Latest All gfx90a') {
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
-                    }
-                }
-                stage('Fp16 Hip Tensile-Latest All gfx90a') {
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env + Fp16_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
-                    }
-                }
-                stage('Bf16 Hip Tensile-Latest All gfx90a') {
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env + Bf16_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
-                    }
-                }
-                stage('Int8 Hip Tensile-Latest All gfx90a') {
-                    agent{ label rocmnode("gfx90a") }
-                    steps{
-                        buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env + Int8_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
-                    }
-                }
+                // stage('Fp32 Hip Tensile-Latest All gfx90a') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
+                //     }
+                // }
+                // stage('Fp16 Hip Tensile-Latest All gfx90a') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env + Fp16_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
+                //     }
+                // }
+                // stage('Bf16 Hip Tensile-Latest All gfx90a') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env + Bf16_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
+                //     }
+                // }
+                // stage('Int8 Hip Tensile-Latest All gfx90a') {
+                //     agent{ label rocmnode("gfx90a") }
+                //     steps{
+                //         buildHipClangJobAndReboot( setup_flags: Tensile_setup + Full_test + extra_log_env + Int8_flags, build_env: Tensile_build_env + extra_log_env, test_flags: ' --verbose ', gpu_arch: "gfx90a:xnack-", miotensile_version: Tensile_version, target_id: "ON")
+                //     }
+                // }
             }
         }
         stage("Packages"){

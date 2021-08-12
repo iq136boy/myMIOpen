@@ -173,7 +173,7 @@ def reboot(){
     sh  '''
 	echo "disabled reboot on gfx90a"
 	'''
-    /// build job: 'reboot-slaves', propagate: false , parameters: [string(name: 'server', value: "${env.NODE_NAME}"),]
+    // build job: 'reboot-slaves', propagate: false , parameters: [string(name: 'server', value: "${env.NODE_NAME}"),]
 }
 
 def buildHipClangJobAndReboot(Map conf=[:]){

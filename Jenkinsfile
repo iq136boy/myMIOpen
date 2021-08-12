@@ -382,16 +382,16 @@ pipeline {
                         buildHipClangJobAndReboot(prefixpath: prefixpath, build_type: 'debug', config_targets: Smoke_targets, gpu_arch: gpu_arch)
                     }
                 }
-                // stage('Fp32 Hip Debug gfx90a /opt/rocm') {
-                //     agent{ label rocmnode("gfx90a") }
-                //     environment{
-                //         gpu_arch = "gfx90a"
-                //         prefixpath = "/opt/rocm"
-                //     }
-                //     steps{
-                //         buildHipClangJobAndReboot(prefixpath: prefixpath, build_type: 'debug', config_targets: Smoke_targets, gpu_arch: gpu_arch)
-                //     }
-                // }
+                stage('Fp32 Hip Debug gfx90a /opt/rocm') {
+                    agent{ label rocmnode("gfx90a") }
+                    environment{
+                        gpu_arch = "gfx90a"
+                        prefixpath = "/opt/rocm"
+                    }
+                    steps{
+                        buildHipClangJobAndReboot(prefixpath: prefixpath, build_type: 'debug', config_targets: Smoke_targets, gpu_arch: gpu_arch)
+                    }
+                }
                 stage('Fp32 HipNoGPU Debug') {
                     agent{  label rocmnode("nogpu") }
                     environment{
@@ -649,12 +649,12 @@ pipeline {
                         buildHipClangJobAndReboot(setup_flags: Full_test, build_env: WORKAROUND_iGemm_936, gpu_arch: "gfx908")
                     }
                 }
-                // stage('Fp32 Hip All gfx90a') {
-                //     agent{ label rocmnode("gfx90a") }
-                //     steps{
-                //         buildHipClangJobAndReboot(setup_flags: Full_test, build_env: WORKAROUND_iGemm_936, gpu_arch: "gfx90a")
-                //     }
-                // }
+                stage('Fp32 Hip All gfx90a') {
+                    agent{ label rocmnode("gfx90a") }
+                    steps{
+                        buildHipClangJobAndReboot(setup_flags: Full_test, build_env: WORKAROUND_iGemm_936, gpu_arch: "gfx90a")
+                    }
+                }
                 stage('Fp16 Hip Install All Vega20') {
                     agent{ label rocmnode("vega20") }
                     steps{
@@ -679,12 +679,12 @@ pipeline {
                         buildHipClangJobAndReboot(setup_flags: Full_test + Fp16_flags, build_env: WORKAROUND_iGemm_936, build_install: "true", gpu_arch: "gfx908")
                     }
                 }
-                // stage('Fp16 Hip All Install gfx90a') {
-                //     agent{ label rocmnode("gfx90a") }
-                //     steps{
-                //         buildHipClangJobAndReboot(setup_flags: Full_test + Fp16_flags, build_env: WORKAROUND_iGemm_936, build_install: "true", gpu_arch: "gfx90a")
-                //     }
-                // }
+                stage('Fp16 Hip All Install gfx90a') {
+                    agent{ label rocmnode("gfx90a") }
+                    steps{
+                        buildHipClangJobAndReboot(setup_flags: Full_test + Fp16_flags, build_env: WORKAROUND_iGemm_936, build_install: "true", gpu_arch: "gfx90a")
+                    }
+                }
             }
         }
 

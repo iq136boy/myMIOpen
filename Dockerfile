@@ -28,14 +28,14 @@ RUN sh -c "echo deb http://mirrors.kernel.org/ubuntu xenial main universe | tee 
 
 #Add gpg keys
 # Install dependencies
-RUN apt-get update --allow-insecure-repositories && DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated \
     wget \
     ca-certificates \
     curl \
     libnuma-dev \
     gnupg && \
 wget -q -O - https://repo.radeon.com/rocm/rocm.gpg.key | apt-key add - && \
-apt-get update --allow-insecure-repositories && DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated \
+apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated \
     apt-utils \
     build-essential \
     cmake \

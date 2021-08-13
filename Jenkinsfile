@@ -276,7 +276,7 @@ pipeline {
         Full_test       = " -DMIOPEN_TEST_ALL=On"
         Tensile_build_env = "MIOPEN_DEBUG_HIP_KERNELS=0 "
         Tensile_setup = " -DMIOPEN_TEST_MIOTENSILE=ON -DMIOPEN_USE_MIOPENTENSILE=ON -DMIOPEN_USE_ROCBLAS=OFF"
-        gfx90a_flags = "-DMIOPEN_TEST_GFX90A=ON"
+        gfx90a_flags = "-DMIOPEN_TEST_GFX90a=ON"
     }
     stages{
         stage("Static checks"){

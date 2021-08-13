@@ -276,6 +276,7 @@ pipeline {
         Full_test       = " -DMIOPEN_TEST_ALL=On"
         Tensile_build_env = "MIOPEN_DEBUG_HIP_KERNELS=0 "
         Tensile_setup = " -DMIOPEN_TEST_MIOTENSILE=ON -DMIOPEN_USE_MIOPENTENSILE=ON -DMIOPEN_USE_ROCBLAS=OFF"
+        gfx90a_flags = "-DMIOPEN_TEST_GFX90A=ON"
     }
     stages{
         stage("Static checks"){
@@ -389,7 +390,7 @@ pipeline {
                         prefixpath = "/opt/rocm"
                     }
                     steps{
-                        buildHipClangJobAndReboot(prefixpath: prefixpath, build_type: 'debug', config_targets: Smoke_targets, gpu_arch: gpu_arch)
+                        buildHipClangJobAndReboot(setup_flags: gfx90a_flags, prefixpath: prefixpath, build_type: 'debug', config_targets: Smoke_targets, gpu_arch: gpu_arch)
                     }
                 }
                 stage('Fp32 HipNoGPU Debug') {
@@ -652,7 +653,7 @@ pipeline {
                 stage('Fp32 Hip All gfx90a') {
                     agent{ label rocmnode("gfx90a") }
                     steps{
-                        buildHipClangJobAndReboot(setup_flags: Full_test, build_env: WORKAROUND_iGemm_936, gpu_arch: "gfx90a")
+                        buildHipClangJobAndReboot(setup_flags: Full_test + gfx90a_flags, build_env: WORKAROUND_iGemm_936, gpu_arch: "gfx90a")
                     }
                 }
                 stage('Fp16 Hip Install All Vega20') {
@@ -682,7 +683,7 @@ pipeline {
                 stage('Fp16 Hip All Install gfx90a') {
                     agent{ label rocmnode("gfx90a") }
                     steps{
-                        buildHipClangJobAndReboot(setup_flags: Full_test + Fp16_flags, build_env: WORKAROUND_iGemm_936, build_install: "true", gpu_arch: "gfx90a")
+                        buildHipClangJobAndReboot(setup_flags: Full_test + Fp16_flags + gfx90a_flags, build_env: WORKAROUND_iGemm_936, build_install: "true", gpu_arch: "gfx90a")
                     }
                 }
             }

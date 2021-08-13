@@ -193,6 +193,12 @@ if(MIOPEN_TEST_GFX908)
     endif()
 endif()
 
+if (MIOPEN_TEST_GFX90a)
+    set(SKIP_ALL_EXCEPT_TESTS test_bn_aux test_cache test_embed_sqlite test_fusion_aux test_include_inliner 
+    test_kernel_build_params test_pooling3d test_sequences test_tensor_test test_test_errors test_type_name 
+    test_perfdb)
+endif()
+
 if(MIOPEN_TEST_GFX1030)
     if(WORKAROUND_ISSUE_1053 AND MIOPEN_TEST_ALL)
         list(APPEND SKIP_TESTS test_lrn_test)

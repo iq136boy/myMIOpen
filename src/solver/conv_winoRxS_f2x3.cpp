@@ -44,8 +44,6 @@ MIOPEN_DECLARE_ENV_VAR(MIOPEN_DEBUG_AMD_WINOGRAD_RXS_F2X3)
 MIOPEN_DECLARE_ENV_VAR(MIOPEN_DEBUG_AMD_WINOGRAD_RXS_F2X3_PERF_VALS)
 MIOPEN_DECLARE_ENV_VAR(MIOPEN_DEBUG_AMD_WINOGRAD_RXS_F2X3_G1)
 
-#define WORKAROUND_ISSUE_1093 1
-
 #define WINODATA 2
 #define WINOFILTER 3
 #define MAX_CU_LIMIT 512
@@ -454,11 +452,7 @@ static bool IsApplicableBase(const ConvolutionContext& params)
         return false;
 
     const auto name = params.GetStream().GetDeviceName();
-#if WORKAROUND_ISSUE_1093
-    if(!(StartsWith(name, "gfx9") || StartsWith(name, "gfx10")) || name == "gfx90a")
-#else
     if(!(StartsWith(name, "gfx9") || StartsWith(name, "gfx10")))
-#endif
         return false;
     if(params.IsFp16() &&
        !(StartsWith(name, "gfx906") || StartsWith(name, "gfx908") || StartsWith(name, "gfx1011") ||

@@ -46,7 +46,9 @@
 MIOPEN_DECLARE_ENV_VAR(MIOPEN_DEBUG_DYNAMIC_REDUCTION);
 
 #define WORKAROUND_MIOPEN_ISSUE_557 1
-#define WORKAROUND_ISSUE_1123 (HIP_PACKAGE_VERSION_FLAT >= 4003000000ULL && HIP_PACKAGE_VERSION_FLAT <= 4003021300ULL && MIOPEN_BACKEND_HIP)
+#define WORKAROUND_ISSUE_1123                                                                  \
+    (HIP_PACKAGE_VERSION_FLAT >= 4003000000ULL && HIP_PACKAGE_VERSION_FLAT <= 4003021300ULL && \
+     MIOPEN_BACKEND_HIP)
 
 namespace miopen {
 
@@ -221,11 +223,8 @@ struct ReductionKernelConfigurator
             return (invariantLength); // let one block to do each reduction
     };
 
-    ReductionMethod_t GetReductionMethod_2(std::size_t invariantLength,
-                                           std::size_t toReduceLength) const
+    ReductionMethod_t GetReductionMethod_2(std::size_t toReduceLength) const
     {
-        (void)invariantLength;
-
         if(toReduceLength <= warpSize_ / 4) // let one thread to do each reduction
             return (Reduce_DirectThreadWise);
         else if(toReduceLength <= blockSize_) // let one warp to do each reduction
@@ -312,9 +311,9 @@ static std::string get_definition_string_from_type_enums(miopenDataType_t TSrc,
 {
     std::ostringstream outs;
 
-    outs << " -DCK_PARAM_SRC_DATATYPE=" << TSrc;
-    outs << " -DCK_PARAM_DST_DATATYPE=" << TDst;
-    outs << " -DCK_PARAM_REDUCE_COMPTYPE=" << TComp;
+    outs << " -DCK_PARAM_SRC_DATATYPE=" << GetDataTypeId(TSrc);
+    outs << " -DCK_PARAM_DST_DATATYPE=" << GetDataTypeId(TDst);
+    outs << " -DCK_PARAM_REDUCE_COMPTYPE=" << GetDataTypeId(TComp);
 
     return (outs.str());
 };
@@ -873,11 +872,11 @@ void ReduceTensorDescriptor::ReduceTensor(const Handle& handle,
         else
             param += " -DCK_PARAM_INVARIANT_DIMS= ";
 
-        param += " -DCK_PARAM_REDUCE_OP=" + std::to_string(reduceOp);
-        param += " -DCK_PARAM_NAN_PROPAGATE=" +
-                 std::to_string(nanPropaOpt == MIOPEN_PROPAGATE_NAN ? 1 : 0);
-        param += " -DCK_PARAM_REDUCE_INDICES=" +
-                 std::to_string(reduceIndicesOpt == MIOPEN_REDUCE_TENSOR_FLATTENED_INDICES ? 1 : 0);
+        param += " -DCK_PARAM_REDUCE_OP=" + std::to_string(detail::GetReduceTensorOpId(reduceOp));
+        param += " -DCK_PARAM_NAN_PROPAGATE=";
+        param += (nanPropaOpt == MIOPEN_PROPAGATE_NAN) ? "1" : "0";
+        param += " -DCK_PARAM_REDUCE_INDICES=";
+        param += (reduceIndicesOpt == MIOPEN_REDUCE_TENSOR_FLATTENED_INDICES) ? "1" : "0";
         param += " -DCK_PARAM_IN_DIMS=" + std::to_string(inDescLengths.size());
         param += " -DCK_PARAM_OUT_DIMS=" +
                  std::to_string(reduceAllDims ? 1 : static_cast<int>(invariantDims.size()));
@@ -976,8 +975,7 @@ void ReduceTensorDescriptor::ReduceTensor(const Handle& handle,
                 static_cast<int>(configurator.getGridSize_2(invariantLength, toReduceLength_2));
             const std::vector<size_t> vgd2_2 = {
                 static_cast<size_t>(gridSize_2) * tunable->BlockSize, size_t{1}, size_t{1}};
-            const auto reduceImpl2 =
-                configurator.GetReductionMethod_2(invariantLength, toReduceLength_2);
+            const auto reduceImpl2  = configurator.GetReductionMethod_2(toReduceLength_2);
             const auto use_padding2 = detail::get_padding_need(reduceImpl2,
                                                                invariantLength,
                                                                toReduceLength_2,

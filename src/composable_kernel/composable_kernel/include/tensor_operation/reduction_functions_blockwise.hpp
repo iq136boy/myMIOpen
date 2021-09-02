@@ -76,7 +76,7 @@ struct BlockwiseReduction_2d_block_buffer
 
         __syncthreads();
 
-        for(index_t indOffset = BlockSize / 2; indOffset > 0; indOffset /= 2)
+        for(index_t indOffset = (BlockSize >> 1); indOffset > 0; indOffset >>= 1)
         {
             if(thread_local_id < indOffset)
             {
@@ -122,9 +122,9 @@ struct BlockwiseReduction_2d_block_buffer
         {
             for(index_t otherDimInd = 0; otherDimInd < toReduceBlocks; otherDimInd++)
             {
-                for(index_t indOffset = 1; indOffset < BlockSize; indOffset *= 2)
+                for(index_t indOffset = 1; indOffset < BlockSize; indOffset <<= 1)
                 {
-                    if(thread_local_id % (indOffset * 2) == 0)
+                    if(thread_local_id % (indOffset << 1) == 0)
                     {
                         index_t offset1 =
                             buffer2dDesc.CalculateOffset(make_tuple(otherDimInd, thread_local_id));
@@ -179,9 +179,9 @@ struct BlockwiseReduction_2d_block_buffer
 
             __syncthreads();
 
-            for(index_t indOffset = 1; indOffset < BlockSize; indOffset *= 2)
+            for(index_t indOffset = 1; indOffset < BlockSize; indOffset <<= 1)
             {
-                if(thread_local_id % (indOffset * 2) == 0)
+                if(thread_local_id % (indOffset << 1) == 0)
                 {
                     index_t offset1 = buffer2dDesc.CalculateOffset(make_tuple(thread_local_id, 0));
                     index_t offset2 =

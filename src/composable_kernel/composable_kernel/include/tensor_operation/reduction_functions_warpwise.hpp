@@ -70,7 +70,7 @@ struct WarpReduce
         // synchronize among all threads in this warp
         __all(1);
 
-        for(index_t stride = warpSize / 2; stride > 0; stride /= 2)
+        for(index_t stride = (warpSize >> 1); stride > 0; stride >>= 1)
         {
             compType tmpVal = __shfl_down(lAccuData, stride, warpSize);
             binop::calculate(lAccuData, tmpVal);
@@ -103,7 +103,7 @@ struct WarpReduce
 
         __syncthreads();
 
-        for(index_t stride = warpSize / 2; stride > 0; stride /= 2)
+        for(index_t stride = (warpSize >> 1); stride > 0; stride >>= 1)
         {
             if(thread_inwarp_id < stride)
             {
@@ -150,7 +150,7 @@ struct WarpReduce
         // synchronize among all threads in this warp
         __all(1);
 
-        for(index_t stride = 1; stride < warpSize; stride *= 2)
+        for(index_t stride = 1; stride < warpSize; stride <<= 1)
         {
             compType tmpVal = __shfl_down(lAccuData, stride, warpSize);
             int tmpIndex    = __shfl_down(lAccuIndex, stride, warpSize);
@@ -192,7 +192,7 @@ struct WarpReduce
 
         __syncthreads();
 
-        for(index_t stride = 1; stride < warpSize; stride *= 2)
+        for(index_t stride = 1; stride < warpSize; stride <<= 1)
         {
             compType currVal1 = myDataBuffer[thread_inwarp_id];
             compType currVal2 = myDataBuffer[thread_inwarp_id + stride];
@@ -288,7 +288,7 @@ struct WarpReduceWithIndicesInput
         // synchronize among all threads in this warp
         __all(1);
 
-        for(index_t stride = 1; stride < warpSize; stride *= 2)
+        for(index_t stride = 1; stride < warpSize; stride <<= 1)
         {
             compType tmpVal = __shfl_down(lAccuData, stride, warpSize);
             int tmpIndex    = __shfl_down(lAccuIndex, stride, warpSize);
@@ -328,7 +328,7 @@ struct WarpReduceWithIndicesInput
 
         __syncthreads();
 
-        for(index_t stride = 1; stride < warpSize; stride *= 2)
+        for(index_t stride = 1; stride < warpSize; stride <<= 1)
         {
             compType currVal1 = myDataBuffer[thread_inwarp_id];
             compType currVal2 = myDataBuffer[thread_inwarp_id + stride];

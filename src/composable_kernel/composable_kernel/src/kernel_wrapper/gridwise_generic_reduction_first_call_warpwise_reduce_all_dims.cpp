@@ -120,7 +120,7 @@ extern "C" __global__ void gridwise_generic_reduce_1_prepare(int GridSize,
     const auto tupleDstStrides = make_tuple(1);
 
     const auto srcDesc = make_naive_tensor_descriptor(tupleSrcLengths, tupleSrcStrides);
-    const auto dstDesc = make_naive_tensor_descriptor(tupleDstLengths, tupleDstStrides);
+    auto dstDesc       = make_naive_tensor_descriptor(tupleDstLengths, tupleDstStrides);
 
     const auto one_dim_srcDesc = transform_tensor_descriptor(
         srcDesc,
@@ -133,12 +133,6 @@ extern "C" __global__ void gridwise_generic_reduce_1_prepare(int GridSize,
         make_tuple(make_unmerge_transform(make_tuple(1, one_dim_srcDesc.GetLength(Number<0>{})))),
         make_tuple(Sequence<0>{}),
         make_tuple(Sequence<0, 1>{}));
-
-    auto dst1dDesc = transform_tensor_descriptor(
-        dstDesc,
-        make_tuple(make_merge_transform(tupleDstLengths)),
-        make_tuple(typename arithmetic_sequence_gen<0, dstDims, 1>::type{}),
-        make_tuple(Sequence<0>{}));
 
     const auto invariantLen = src2dDesc.GetLength(Number<0>{});
     const auto toReduceLen  = src2dDesc.GetLength(Number<1>{});
@@ -180,15 +174,15 @@ extern "C" __global__ void gridwise_generic_reduce_1_prepare(int GridSize,
     else
     {
         if(get_thread_local_1d_id() == 0)
-            *static_cast<decltype(dst1dDesc)*>(p_dst1dDesc) = dst1dDesc;
+            *static_cast<decltype(dstDesc)*>(p_dst1dDesc) = dstDesc;
     }
 };
 
-template <index_t srcDims, index_t dstDims, typename toReduceDims>
+template <index_t srcDims>
 struct get_ref_desc_types
 {
     static constexpr auto ref_srcLengths = typename uniform_sequence_gen<srcDims, 8>::type{};
-    static constexpr auto ref_dstLengths = typename uniform_sequence_gen<dstDims, 1>::type{};
+    static constexpr auto ref_dstLengths = typename uniform_sequence_gen<1, 1>::type{};
 
     // don't have to use accurate strides to get an expected referrence type
     static constexpr auto ref_srcDesc = make_naive_tensor_descriptor(
@@ -209,12 +203,6 @@ struct get_ref_desc_types
                                     make_tuple(Sequence<0>{}),
                                     make_tuple(Sequence<0, 1>{}));
 
-    static constexpr auto ref_dst1dDesc = transform_tensor_descriptor(
-        ref_dstDesc,
-        make_tuple(make_merge_transform(make_tuple_from_seq(ref_dstLengths))),
-        make_tuple(typename arithmetic_sequence_gen<0, dstDims, 1>::type{}),
-        make_tuple(Sequence<0>{}));
-
     static constexpr auto ref_invariantLen = ref_src2dDesc.GetLength(Number<0>{});
     static constexpr auto ref_toReduceLen  = ref_src2dDesc.GetLength(Number<1>{});
 
@@ -227,23 +215,19 @@ struct get_ref_desc_types
                                              make_tuple(Sequence<0>{}, Sequence<1>{})));
 
     using refType_dst1dDesc_padded =
-        decltype(transform_tensor_descriptor(ref_dst1dDesc,
+        decltype(transform_tensor_descriptor(ref_dstDesc,
                                              make_tuple(make_pad_transform(ref_invariantLen, 0, 2)),
                                              make_tuple(Sequence<0>{}),
                                              make_tuple(Sequence<0>{})));
 
     using refType_src2dDesc = decltype(ref_src2dDesc);
-    using refType_dst1dDesc = decltype(ref_dst1dDesc);
+    using refType_dst1dDesc = decltype(ref_dstDesc);
 };
 
-using refType_src2dDesc =
-    typename get_ref_desc_types<srcDims, dstDims, toReduceDims>::refType_src2dDesc;
-using refType_dst1dDesc =
-    typename get_ref_desc_types<srcDims, dstDims, toReduceDims>::refType_dst1dDesc;
-using refType_src2dDesc_padded_12
-    typename get_ref_desc_types<srcDims, dstDims, toReduceDims>::refType_src2dDesc_padded_12;
-using refType_dst1dDesc_padded =
-    typename get_ref_desc_types<srcDims, dstDims, toReduceDims>::refType_dst1dDesc_padded;
+using refType_src2dDesc = typename get_ref_desc_types<srcDims>::refType_src2dDesc;
+using refType_dst1dDesc = typename get_ref_desc_types<srcDims>::refType_dst1dDesc;
+using refType_src2dDesc_padded_12 typename get_ref_desc_types<srcDims>::refType_src2dDesc_padded_12;
+using refType_dst1dDesc_padded = typename get_ref_desc_types<srcDims>::refType_dst1dDesc_padded;
 
 template <bool need_padding>
 static __device__ auto get_reduction_src2d_descriptor(const void* p_src2dDesc)

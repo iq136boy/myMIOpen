@@ -42,8 +42,11 @@ constexpr index_t BlockSize = CK_PARAM_BLOCKSIZE; // tunable
 constexpr index_t srcDims = CK_PARAM_IN_DIMS;
 constexpr index_t dstDims = CK_PARAM_OUT_DIMS;
 
-using toReduceDims  = Sequence<CK_PARAM_TOREDUCE_DIMS>;
-using invariantDims = Sequence<CK_PARAM_INVARIANT_DIMS>; // this could be empty
+constexpr index_t num_toReduceDims  = CK_PARAM_NUM_TOREDUCE_DIMS;
+constexpr index_t num_invariantDims = srcDims - num_toReduceDims;
+
+using invariantDims = typename arithmetic_sequence_gen<0, num_invariantDims, 1>::type;
+using toReduceDims  = typename arithmetic_sequence_gen<num_invariantDims, srcDims, 1>::type;
 
 constexpr ReduceTensorOp_t op          = get_reduce_op<CK_PARAM_REDUCE_OP>::op;
 constexpr NanPropagation_t nanPropaOpt = CK_PARAM_NAN_PROPAGATE == 0
@@ -56,14 +59,9 @@ constexpr ReduceTensorIndices_t reduceIndicesOpt = CK_PARAM_REDUCE_INDICES == 0
 constexpr bool src2d_need_padding = static_cast<bool>(CK_PARAM_SRC2D_PADDING);
 constexpr bool dst1d_need_padding = static_cast<bool>(CK_PARAM_DST1D_PADDING);
 
-////////////////////////////////////////////////////////////////////////////////////////
-using specDims = typename sequence_merge<invariantDims, toReduceDims>::type;
+static_assert(num_toReduceDims > 0, "At least one dimension need be reduced!!!");
 
-static_assert(is_valid_sequence_map<specDims>::value && specDims::Size() == srcDims,
-              "Wrong invariant and/or toReduce dimensions!");
-
-// The number of invariant dimensions can be zero if all dimension are to be reduced
-static_assert(invariantDims::Size() > 0 || dstDims == 1,
+static_assert(num_invariantDims > 0 || dstDims == 1,
               "If all source dimensions are reduced, the dest should have only one dimension !!");
 
 constexpr bool indexable    = reduce_binary_operator<compType, op>::indexable;

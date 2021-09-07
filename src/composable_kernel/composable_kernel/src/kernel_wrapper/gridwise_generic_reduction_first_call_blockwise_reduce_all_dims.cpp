@@ -168,13 +168,11 @@ template <index_t srcDims>
 struct get_ref_desc_types
 {
     static constexpr auto ref_srcLengths = typename uniform_sequence_gen<srcDims, 8>::type{};
-    static constexpr auto ref_dstLengths = typename uniform_sequence_gen<1, 1>::type{};
 
     // don't have to use accurate strides to get an expected referrence type
     static constexpr auto ref_srcDesc = make_naive_tensor_descriptor(
         make_tuple_from_seq(ref_srcLengths), make_tuple_from_seq(ref_srcLengths));
-    static constexpr auto ref_dstDesc = make_naive_tensor_descriptor(
-        make_tuple_from_seq(ref_dstLengths), make_tuple_from_seq(ref_dstLengths));
+    static constexpr auto ref_dstDesc = make_naive_tensor_descriptor(make_tuple(1), make_tuple(1));
 
     static constexpr auto ref_one_dim_srcDesc = transform_tensor_descriptor(
         ref_srcDesc,

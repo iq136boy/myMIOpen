@@ -35,8 +35,8 @@ namespace reduce {
 // Every binary operator used in reduction is represented by a templated functor class. Each functor
 // class must provide at least
 // three members:
-// 1) GetZeroVal() -- the interface to return the "identity element" for the binary operator,
-// "identity element" is the unique
+// 1) GetReductionZeroVal() -- the interface to return the "identity element" for the binary
+// operator, "identity element" is the unique
 //                    element in the algebraic space that doesn't affect the value of other elements
 //                    when operated with any of them.
 // 2) indexable -- boolean value indicating whether indices of the operated elements could be
@@ -58,7 +58,7 @@ struct Add
 {
     using dataType = T;
 
-    __device__ static T GetZeroVal() { return type_convert<T>{}(0.0f); };
+    __device__ static T GetReductionZeroVal() { return type_convert<T>{}(0.0f); };
 
     __device__ inline constexpr void operator()(T& a, T b) const { a = a + b; }
 
@@ -70,7 +70,7 @@ struct Mul
 {
     using dataType = T;
 
-    __device__ static T GetZeroVal() { return type_convert<T>{}(1.0f); };
+    __device__ static T GetReductionZeroVal() { return type_convert<T>{}(1.0f); };
 
     __device__ inline constexpr void operator()(T& a, T b) const { a = a * b; }
 
@@ -82,7 +82,7 @@ struct Max
 {
     using dataType = T;
 
-    __device__ static T GetZeroVal() { return std::numeric_limits<T>::min(); };
+    __device__ static T GetReductionZeroVal() { return std::numeric_limits<T>::min(); };
 
     __device__ inline constexpr void operator()(T& a, T b) const
     {
@@ -107,7 +107,7 @@ struct Min
 {
     using dataType = T;
 
-    __device__ static T GetZeroVal() { return std::numeric_limits<T>::max(); };
+    __device__ static T GetReductionZeroVal() { return std::numeric_limits<T>::max(); };
 
     __device__ inline constexpr void operator()(T& a, T b) const
     {
@@ -128,13 +128,13 @@ struct Min
 };
 
 template <>
-__device__ half_t Max<half_t>::GetZeroVal()
+__device__ half_t Max<half_t>::GetReductionZeroVal()
 {
     return type_convert<half_t>{}(std::numeric_limits<float>::min());
 };
 
 template <>
-__device__ half_t Min<half_t>::GetZeroVal()
+__device__ half_t Min<half_t>::GetReductionZeroVal()
 {
     return type_convert<half_t>{}(std::numeric_limits<float>::max());
 };
@@ -268,7 +268,7 @@ struct unary_sqrt<half_t>
 
 // The templated struct reduce_binary_operator maps the enum Ids of binary operators to their
 // respective functor classes.
-// The "GetZeroVal()" interface and boolean member "indexable" are also provided in
+// The "GetReductionZeroVal()" interface and boolean member "indexable" are also provided in
 // reduce_binary_operactor for
 // easier checking by the upper-layer codes in the kernels.
 
@@ -281,7 +281,7 @@ struct reduce_binary_operator<T, ReduceTensorOp_t::ADD>
     using opType   = reduce::Add<T>;
     using dataType = T;
 
-    __device__ static T GetZeroVal() { return reduce::Add<T>::GetZeroVal(); };
+    __device__ static T GetReductionZeroVal() { return reduce::Add<T>::GetReductionZeroVal(); };
 
     static constexpr bool indexable = reduce::Add<T>::indexable;
 };
@@ -292,7 +292,7 @@ struct reduce_binary_operator<T, ReduceTensorOp_t::MUL>
     using opType   = reduce::Mul<T>;
     using dataType = T;
 
-    __device__ static T GetZeroVal() { return reduce::Mul<T>::GetZeroVal(); };
+    __device__ static T GetReductionZeroVal() { return reduce::Mul<T>::GetReductionZeroVal(); };
 
     static constexpr bool indexable = reduce::Mul<T>::indexable;
 };
@@ -303,7 +303,7 @@ struct reduce_binary_operator<T, ReduceTensorOp_t::MIN>
     using opType   = reduce::Min<T>;
     using dataType = T;
 
-    __device__ static T GetZeroVal() { return reduce::Min<T>::GetZeroVal(); };
+    __device__ static T GetReductionZeroVal() { return reduce::Min<T>::GetReductionZeroVal(); };
 
     static constexpr bool indexable = reduce::Min<T>::indexable;
 };
@@ -314,7 +314,7 @@ struct reduce_binary_operator<T, ReduceTensorOp_t::MAX>
     using opType   = reduce::Max<T>;
     using dataType = T;
 
-    __device__ static T GetZeroVal() { return reduce::Max<T>::GetZeroVal(); };
+    __device__ static T GetReductionZeroVal() { return reduce::Max<T>::GetReductionZeroVal(); };
 
     static constexpr bool indexable = reduce::Max<T>::indexable;
 };
@@ -325,7 +325,7 @@ struct reduce_binary_operator<T, ReduceTensorOp_t::AMAX>
     using opType   = reduce::Max<T>;
     using dataType = T;
 
-    __device__ static T GetZeroVal() { return reduce::Max<T>::GetZeroVal(); };
+    __device__ static T GetReductionZeroVal() { return reduce::Max<T>::GetReductionZeroVal(); };
 
     static constexpr bool indexable = reduce::Max<T>::indexable;
 };
@@ -336,7 +336,7 @@ struct reduce_binary_operator<T, ReduceTensorOp_t::AVG>
     using opType   = reduce::Add<T>;
     using dataType = T;
 
-    __device__ static T GetZeroVal() { return reduce::Add<T>::GetZeroVal(); };
+    __device__ static T GetReductionZeroVal() { return reduce::Add<T>::GetReductionZeroVal(); };
 
     static constexpr bool indexable = reduce::Add<T>::indexable;
 };
@@ -347,7 +347,7 @@ struct reduce_binary_operator<T, ReduceTensorOp_t::NORM1>
     using opType   = reduce::Add<T>;
     using dataType = T;
 
-    __device__ static T GetZeroVal() { return reduce::Add<T>::GetZeroVal(); };
+    __device__ static T GetReductionZeroVal() { return reduce::Add<T>::GetReductionZeroVal(); };
 
     static constexpr bool indexable = reduce::Add<T>::indexable;
 };
@@ -358,7 +358,7 @@ struct reduce_binary_operator<T, ReduceTensorOp_t::NORM2>
     using opType   = reduce::Add<T>;
     using dataType = T;
 
-    __device__ static T GetZeroVal() { return reduce::Add<T>::GetZeroVal(); };
+    __device__ static T GetReductionZeroVal() { return reduce::Add<T>::GetReductionZeroVal(); };
 
     static constexpr bool indexable = reduce::Add<T>::indexable;
 };

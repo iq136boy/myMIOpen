@@ -303,7 +303,8 @@ ConvolutionDescriptor::WrwGetValidWorkSpaceSizeGemm(const TensorDescriptor& dyDe
                                                     const TensorDescriptor& dwDesc) const
 {
 #if MIOPEN_USE_GEMM
-    if(miopen::IsDisabled(MIOPEN_DEBUG_CONV_GEMM{}))
+    // if(miopen::IsDisabled(MIOPEN_DEBUG_CONV_GEMM{}))
+    if(true) // disable GEMM
         return 0;
 
     const auto ctx =
@@ -380,7 +381,8 @@ std::size_t ConvolutionDescriptor::ForwardGetWorkSpaceSize(Handle& handle,
 
     size_t workspace_size_gemm = 0;
 #if MIOPEN_USE_GEMM
-    if(!miopen::IsDisabled(MIOPEN_DEBUG_CONV_GEMM{}))
+    // if(!miopen::IsDisabled(MIOPEN_DEBUG_CONV_GEMM{}))
+    if(!true) // disable GEMM
     {
         decltype(auto) gemm_ws_sz_pairs = AllGemmWorkspaceSize(ctx);
 
@@ -464,7 +466,8 @@ ConvolutionDescriptor::BackwardDataGetWorkSpaceSize(Handle& handle,
 #if MIOPEN_USE_GEMM
     size_t tmp_max_workspace =
         std::max({direct_workspace, implicit_gemm_workspace, workspace_size_winograd});
-    if(!miopen::IsDisabled(MIOPEN_DEBUG_CONV_GEMM{}))
+    // if(!miopen::IsDisabled(MIOPEN_DEBUG_CONV_GEMM{}))
+    if(!true) // disable GEMM
     {
         decltype(auto) gemm_ws_sz_pairs = AllGemmWorkspaceSize(ctx);
 
@@ -498,7 +501,8 @@ std::size_t ConvolutionDescriptor::BackwardWeightsGetWorkSpaceSizeGEMM(
     const miopen::ConvolutionContext& ctx) const
 {
 #if MIOPEN_USE_GEMM
-    if(miopen::IsDisabled(MIOPEN_DEBUG_CONV_GEMM{}))
+    // if(miopen::IsDisabled(MIOPEN_DEBUG_CONV_GEMM{}))
+    if(true) // disable GEMM
         return 0;
 
     decltype(auto) gemm_ws_sz_pairs = AllGemmWorkspaceSize(ctx);

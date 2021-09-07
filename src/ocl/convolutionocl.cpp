@@ -147,7 +147,8 @@ ConvolutionDescriptor::FindDataGemmSolutions(const ConvolutionContext& ctx,
                                              const AnyInvokeParams& invoke_ctx) const
 {
 #if MIOPEN_USE_GEMM
-    if(miopen::IsDisabled(MIOPEN_DEBUG_CONV_GEMM{}))
+    // if(miopen::IsDisabled(MIOPEN_DEBUG_CONV_GEMM{}))
+    if(true) // disable GEMM
         return {};
     try
     {
@@ -690,7 +691,7 @@ static inline bool IsAlgorithmDisabled(const miopenConvAlgorithm_t algo)
     switch(algo)
     { // clang-format off
     case miopenConvolutionAlgoGEMM:
-        return !MIOPEN_USE_GEMM || miopen::IsDisabled(MIOPEN_DEBUG_CONV_GEMM{});
+        return !MIOPEN_USE_GEMM || true; // miopen::IsDisabled(MIOPEN_DEBUG_CONV_GEMM{}); // Disable GEMM backend
     case miopenConvolutionAlgoDirect:
         return miopen::IsDisabled(MIOPEN_DEBUG_CONV_DIRECT{});
     case miopenConvolutionAlgoFFT:

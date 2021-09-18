@@ -75,6 +75,8 @@ ENV UBSAN_OPTIONS=print_stacktrace=1
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
+ENV HSA_XNACK=0
+
 # Install an init system
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64.deb
 RUN dpkg -i dumb-init_*.deb && rm dumb-init_*.deb

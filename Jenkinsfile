@@ -246,7 +246,7 @@ pipeline {
             description: "")
         booleanParam(
             name: "FULL_TESTS_NAVI21_OPTIONAL",
-            defaultValue: false,
+            defaultValue: true,
             description: "")
         booleanParam(
             name: "MIOPENTENSILE",
@@ -258,27 +258,27 @@ pipeline {
             description: "")
         booleanParam(
             name: "PACKAGES",
-            defaultValue: true,
+            defaultValue: false,
             description: "")
         booleanParam(
             name: "TARGET_NOGPU",
-            defaultValue: true,
+            defaultValue: false,
             description: "")
         booleanParam(
             name: "TARGET_VEGA10",
-            defaultValue: true,
+            defaultValue: false,
             description: "")
         booleanParam(
             name: "TARGET_VEGA20",
-            defaultValue: true,
+            defaultValue: false,
             description: "")
         booleanParam(
             name: "TARGET_GFX908",
-            defaultValue: true,
+            defaultValue: false,
             description: "")
         booleanParam(
             name: "TARGET_GFX90A",
-            defaultValue: true,
+            defaultValue: false,
             description: "")
         booleanParam(
             name: "TARGET_NAVI21",

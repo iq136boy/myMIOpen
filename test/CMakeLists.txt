@@ -191,7 +191,7 @@ endif()
 
 if(MIOPEN_TEST_GFX1030)
     if(WORKAROUND_ISSUE_1053 AND MIOPEN_TEST_ALL)
-        list(APPEND SKIP_TESTS test_pooling2d test_lrn_test)
+        list(APPEND SKIP_TESTS test_pooling2d test_lrn_test test_rnn_extra)
     endif()
 endif()
 
